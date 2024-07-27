@@ -13,3 +13,4 @@ update :; forge update
 # cast wallet list - shows your accounts on your computer
 deploy-sepolia :
 	@forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(SEPOLIA_RPC_URL) --account myaccount --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
+
