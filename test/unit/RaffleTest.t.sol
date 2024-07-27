@@ -8,8 +8,9 @@ import {HelperConfig} from "script/HelperConfig.s.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {console} from "forge-std/console.sol";
+import {CodeConstants} from "script/HelperConfig.s.sol";
 
-contract RaffleTest is Test {
+contract RaffleTest is CodeConstants, Test {
     Raffle public raffle;
     HelperConfig public helperConfig;
 
@@ -191,7 +192,19 @@ contract RaffleTest is Test {
     /*////////////////////////////////////////////////////////////////////////////// 
         FULLFIILL RANDOM WORDS - RANDOM NUMBER GENARATOR                                  
     ////////////////////////////////////////////////////////////////////////////////*/
-    function testFulfillrandomWordsCanOnlyBeCalledAfterPerformUpKeep(uint256 randomRequestId) public raffleEntered {
+
+    modifier skipFork() {
+        if (block.chainid != LOCAL_CHAIN_ID) {
+            return;
+        }
+        _;
+    }
+
+    function testFulfillrandomWordsCanOnlyBeCalledAfterPerformUpKeep(uint256 randomRequestId)
+        public
+        raffleEntered
+        skipFork
+    {
         // From VRFCoordinatorV2_5Mock.sol
         //     if (s_subscriptionConfigs[subId].owner == address(0)) {
         //         revert UnknownSubscription();
@@ -205,7 +218,7 @@ contract RaffleTest is Test {
     }
     // This is an end to end test of some sort
 
-    function testFulfillRandomWordsPicksWinnerResetsAndSendsMoney() public raffleEntered {
+    function testFulfillRandomWordsPicksWinnerResetsAndSendsMoney() public raffleEntered skipFork {
         // Arrange
         uint256 additionalEntrants = 3; // 4 people in the raffle
         uint256 startingIndex = 1;
